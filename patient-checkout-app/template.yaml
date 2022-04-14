@@ -8,20 +8,47 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 20
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  PatientCheckoutTopic:
+    Type: AWS::SNS::Topic
+  PatientCheckoutBucket:
+    Type: AWS::S3::Bucket
     Properties:
-      CodeUri: hello_world/
-      Handler: app.lambda_handler
+      BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+  PatientCheckoutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: patient_checkout/
+      Handler: patient_checkout.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt PatientCheckoutTopic.TopicName
+      Environment:
+        Variables:
+          PATIENT_CHECKOUT_TOPIC: !Ref PatientCheckoutTopic
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref PatientCheckoutBucket
+            Events: s3:ObjectCreated:*
+  BillManagementFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: patient_checkout/
+      Handler: bill_management.lambda_handler
       Runtime: python3.8
       Architectures:
         - x86_64
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        SNSEvent:
+          Type: SNS
           Properties:
-            Path: /hello
-            Method: get
+            Topic: !Ref PatientCheckoutTopic
