@@ -36,7 +36,6 @@ def lambda_handler(event: any, context: object) -> None:
         # Calculate the graded based on their test_score
         test_score = event.get("testScore")
         calculated_grade = calculate_grade(test_score)
-        print(calculated_grade)
         event.update({"grade": calculated_grade})
 
         # Publish events to SNS topic
