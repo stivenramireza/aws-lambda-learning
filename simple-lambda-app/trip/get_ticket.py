@@ -53,9 +53,7 @@ tickets = [
 
 def lambda_handler(event, context):
     ticket_id = event.get("pathParameters").get("ticket_id")
-    ticket = list(
-        filter(lambda t: t.get("ticket").get("id") == ticket_id, tickets)
-    )
+    ticket = list(filter(lambda t: t.get("ticket").get("id") == ticket_id, tickets))
     if not ticket:
         return {"statusCode": 404, "success": False, "data": "Ticket not found"}
     data = {**ticket[0]}

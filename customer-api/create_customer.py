@@ -13,7 +13,5 @@ def lambda_handler(event, context):
     return {
         "statusCode": 201,
         "headers": {},
-        "body": json.dumps(
-            {"message": "Customer has been created successfully"}
-        ),
+        "body": json.dumps({"message": "Customer has been created successfully"}),
     }

@@ -7,9 +7,7 @@ trackers = [
 
 def lambda_handler(event, context):
     tracker_id = event.get("pathParameters").get("tracker_id")
-    tracker = list(
-        filter(lambda t: t.get("tracker_id") == tracker_id, trackers)
-    )
+    tracker = list(filter(lambda t: t.get("tracker_id") == tracker_id, trackers))
     if not tracker:
         print("Tracker not found")
     body = {
