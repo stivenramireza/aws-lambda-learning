@@ -3,7 +3,7 @@ import json
 import boto3
 from typing import Dict
 
-from grade_calculator.logger import logger
+from logger import logger
 
 
 s3_client = boto3.client("s3")
@@ -24,8 +24,8 @@ def calculate_grade(test_score: Dict[str, any]) -> str:
 
 def lambda_handler(event: any, context: object) -> None:
     bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
-    logger.info(f"Reading {file_key} from {bucket_name}")
     file_key = event["Records"][0]["s3"]["object"]["key"]
+    logger.info(f"Reading {file_key} from {bucket_name}")
     obj = s3_client.get_object(Bucket=bucket_name, Key=file_key)
     file_content = obj.get("Body").read().decode("utf-8")
 

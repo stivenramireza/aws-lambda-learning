@@ -1,4 +1,4 @@
-from grade_calculator.logger import logger
+from logger import logger
 
 
 def lambda_handler(event: any, context: object) -> None:
